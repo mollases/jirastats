@@ -1,6 +1,3 @@
-// https://whitepages.atlassian.net/rest/api/latest/issue/PREM-4406/changelog
-
-
 require('dotenv').config()
 const axios = require('axios')
 const Promise = require('bluebird')
@@ -10,10 +7,6 @@ let config = {
       Authorization: `Basic ${btoa(process.env.EMAIL+":"+process.env.API_KEY)}`,
     }
   }
-
-// const issue = 'PREM-4160'
-// const issue = 'PREM-4406'
-// const issue = 'PREM-4194'
 
 const issue = process.argv[2]
 const instance = axios.create(config)
