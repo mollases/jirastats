@@ -3,6 +3,13 @@
 A simple command line program to help understand how things are moving along in jira
 
 ## Installation
+1. `touch .env` in the root of this repo
+1. add your email like this `EMAIL=amolla@whitepages.com` to the .env file you just created
+1. go to your official jira profile https://id.atlassian.com/manage-profile/security
+1. make an api key
+1. add your api key like this `API_KEY=SUPERSECRET123` to the .env file
+
+
 ```
 npm i
 ```
