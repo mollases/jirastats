@@ -4,7 +4,7 @@ const Promise = require('bluebird')
 
 let config = {
     headers: {
-      Authorization: `Basic ${btoa(process.env.EMAIL+":"+process.env.API_KEY)}`,
+      Authorization: `Basic ${btoa(process.env.EMAIL+":"+process.env.API_TOKEN)}`,
     }
   }
 
