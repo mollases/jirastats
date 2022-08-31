@@ -77,7 +77,6 @@ findStory(issue)
                 .then((stories) => {
                     stories.forEach((story) => {
                         findStory(story.key)
-                        .then(console.log)
                         .catch(e => {
                             console.error("error getting child stories",e)
                         })
