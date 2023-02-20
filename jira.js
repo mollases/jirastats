@@ -1,21 +1,26 @@
-require('dotenv').config()
-const axios = require('axios')
-const Promise = require('bluebird')
+const axios = require('./axios')
 
-let config = {
-    headers: {
-      Authorization: `Basic ${btoa(process.env.EMAIL+":"+process.env.API_TOKEN)}`,
-    }
-  }
+/**
+ * how many times a ticket has changed columns
+ * 
+ */
 
 const issue = process.argv[2]
-const instance = axios.create(config)
+const person = process.argv[3]
 
+const getEpicStories = (epicId, person) => {
+    let extended = ''
+    if(!person){
+        console.log('getting epic details')
+    } else {
+        console.log('getting epic details for ' + person)
+        extended = ` and assignee = "${person}"`
+    }
+    const request = `https://whitepages.atlassian.net/rest/api/2/search?jql=${encodeURIComponent(`"Epic Link" = ${epicId} ${extended}`)}`
+    console.log(request)
 
-const getEpicStories = (epicId) => {
-    console.log('getting epic details')
-    return instance
-    .get(`https://whitepages.atlassian.net/rest/api/2/search?jql=${encodeURIComponent(`"Epic Link" = ${epicId}`)}`)
+    return axios
+    .get(request)
     .then(res => {
       const stories = res.data.issues.map((k) => {
           return k.key
@@ -29,7 +34,7 @@ const getEpicStories = (epicId) => {
 }
 
 const findStory = (issue) => {
-    return instance
+    return axios
     .get(`https://whitepages.atlassian.net/rest/api/latest/issue/${issue}`)
     .then(r => r.data.fields)
 }
@@ -38,6 +43,7 @@ const getStoryDetails = (issue) => {
     const storyDetails = findStory(issue)
         .then(story => {
             return {
+                "ticket": `https://whitepages.atlassian.net/browse/${issue}`,
                 "story": story.summary,
                 "assignee":story.assignee?.displayName || "none",
                 "status": story.status.statusCategory.name +" "+ story.status.name,
@@ -47,7 +53,7 @@ const getStoryDetails = (issue) => {
         })
 
     const storyHistory =
-        instance
+        axios
             .get(`https://whitepages.atlassian.net/rest/api/latest/issue/${issue}/changelog`)
             .then(r => {
                 const inProgress = findInterestingInfo(r.data.values, {"toString": "In Progress"})
@@ -62,7 +68,11 @@ const getStoryDetails = (issue) => {
                     if(done.length > 0){
                         end = new Date(done[0].created)
                     }
-                    return {"actual days": getBusinessDatesCount(startDate,end)}
+                    return {
+                        "actual days": getBusinessDatesCount(startDate,end),
+                        'in progress': startDate,
+                        'done/today': end,
+                            }
                 } else {
                     return {"actual days": "not started"}
                 }
@@ -80,11 +90,11 @@ const getStoryDetails = (issue) => {
         })
 }
 
-const recurse = (story) => {
+const recurse = (story, person) => {
     return findStory(story)
         .then(r => {
             if(r.issuetype.name === 'Epic'){
-                return getEpicStories(story)
+                return getEpicStories(story,person)
                     .then((substories) => {
                         const childStories = substories.map((substory) => {
                             return recurse(substory)
@@ -95,7 +105,7 @@ const recurse = (story) => {
                         })
                     })
                     .catch(e => {
-                        console.error("error getting child stories",e)
+                        console.error("error getting child stories",substories, e)
                     })
             } else {
                 console.log("getting story details", story)
@@ -111,7 +121,7 @@ const recurse = (story) => {
         })
 }
 
-recurse(issue)
+recurse(issue, person)
     .then(console.log)
 
 const findInterestingInfo = (changeLogValues, objToFind) => {
