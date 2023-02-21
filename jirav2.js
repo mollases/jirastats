@@ -1,17 +1,16 @@
 const converter = require('json-2-csv')
 const axios = require('./axios')
-const Analyzer = require('./changelogAnalysis')
+const Analyzer = require('./changelogAnalyzer')
 const { interestingFields } = require('./contants')
 
 let jql = `project = PREMOP AND status = Done AND labels = CRO AND type != Sub-Task`
 
 /*
 TODO:
-number of assignees
 time in blocked, or if it had been blocked
 calculate how long it was in progress
-changes to the description / change in scope
 estimated time
+"what happens when you work two tickets at once"
 */
 
 const getStoriesFromFilter = async (filter) => {
@@ -99,12 +98,14 @@ const convertToCSV = async (data) => {
   })
 }
 
-getStoriesFromFilter(jql)
-  .then((arr) => {
-    const promises = arr.map(issue => {
-      return getStoryInfo(issue)
-    })
-    return Promise.all(promises)
-  })
-  .then(convertToCSV)
-  .then(console.log)
+
+getStoryInfo('PREMOP-525').then(console.log)
+// getStoriesFromFilter(jql)
+//   .then((arr) => {
+//     const promises = arr.map(issue => {
+//       return getStoryInfo(issue)
+//     })
+//     return Promise.all(promises)
+//   })
+//   .then(convertToCSV)
+//   .then(console.log)
