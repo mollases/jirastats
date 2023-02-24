@@ -1,7 +1,16 @@
+const commandLineArgs = require('command-line-args')
 const converter = require('json-2-csv')
 const axios = require('./axios')
 const Analyzer = require('./changelogAnalyzer')
 const { interestingFields } = require('./contants')
+
+const optionDefinitions = [
+  { name: 'ticket', alias: 't', type: String },
+  { name: 'jql', alias: 'j', type: String }
+]
+
+const options = commandLineArgs(optionDefinitions)
+
 
 let jql = `project = PREMOP AND status = Done AND labels = CRO AND type not in ( Sub-Task , Bug)`
 
@@ -96,14 +105,28 @@ const convertToCSV = async (data) => {
   })
 }
 
+if (options.ticket) {
+  getStoryInfo(options.ticket).then(console.log)
+} else if (options.jql) {
+  getStoriesFromFilter(options.jql)
+    .then((arr) => {
+      const promises = arr.map(issue => {
+        return getStoryInfo(issue)
+      })
+      return Promise.all(promises)
+    })
+    .then(convertToCSV)
+    .then(console.log)
+} else {
+  console.log(`
 
-getStoryInfo('PREMOP-998').then(console.log)
-// getStoriesFromFilter(jql)
-//   .then((arr) => {
-//     const promises = arr.map(issue => {
-//       return getStoryInfo(issue)
-//     })
-//     return Promise.all(promises)
-//   })
-//   .then(convertToCSV)
-//   .then(console.log)
+Missing arguments
+
+provide a ticket via "-t {jira ticket}" or "--ticket {jira ticket}"
+provide a jql query via "-j "{jql query}" or "--jql "{jql query}"
+
+If you are using the git repo, use this format "npm start -- [args]"
+for example "npm start -- -t PREM-1"
+
+`)
+}
