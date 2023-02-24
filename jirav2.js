@@ -3,13 +3,11 @@ const axios = require('./axios')
 const Analyzer = require('./changelogAnalyzer')
 const { interestingFields } = require('./contants')
 
-let jql = `project = PREMOP AND status = Done AND labels = CRO AND type != Sub-Task`
+let jql = `project = PREMOP AND status = Done AND labels = CRO AND type not in ( Sub-Task , Bug)`
 
 /*
 TODO:
-time in blocked, or if it had been blocked
-calculate how long it was in progress
-estimated time
+estimations
 "what happens when you work two tickets at once"
 */
 
@@ -99,7 +97,7 @@ const convertToCSV = async (data) => {
 }
 
 
-getStoryInfo('PREMOP-525').then(console.log)
+getStoryInfo('PREMOP-998').then(console.log)
 // getStoriesFromFilter(jql)
 //   .then((arr) => {
 //     const promises = arr.map(issue => {

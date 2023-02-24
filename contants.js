@@ -29,6 +29,7 @@ const interestingFields = [
     { field: 'Creator', indexInto: 'displayName' },
     { field: 'Created', },
     { field: 'Updated', },
+    { field: 'timetracking', indexInto: 'remainingEstimate' },
 ]
 
 module.exports = {
