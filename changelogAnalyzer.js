@@ -1,4 +1,4 @@
-const { daysOff } = require('./contants')
+const { daysOff } = require('./constants')
 const moment = require('moment')
 
 class Analyzer {

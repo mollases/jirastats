@@ -2,7 +2,7 @@ const commandLineArgs = require('command-line-args')
 const converter = require('json-2-csv')
 const axios = require('./axios')
 const Analyzer = require('./changelogAnalyzer')
-const { interestingFields } = require('./contants')
+const { interestingFields } = require('./constants')
 
 const optionDefinitions = [
   { name: 'ticket', alias: 't', type: String },
@@ -19,7 +19,7 @@ estimations
 */
 
 const getStoriesFromFilter = async (filter) => {
-  const request = `https://whitepages.atlassian.net/rest/api/2/search?jql=${encodeURIComponent(filter)}`
+  const request = `/rest/api/2/search?jql=${encodeURIComponent(filter)}`
   return axios
     .get(request)
     .then(res => {
@@ -36,7 +36,7 @@ const getStoriesFromFilter = async (filter) => {
 }
 
 const getStoriesFromSubFilter = async (filter, startAt) => {
-  const request = `https://whitepages.atlassian.net/rest/api/2/search?jql=${encodeURIComponent(filter)}&startAt=${startAt}`
+  const request = `/rest/api/2/search?jql=${encodeURIComponent(filter)}&startAt=${startAt}`
 
   return axios
     .get(request)
@@ -53,7 +53,7 @@ const getStoriesFromSubFilter = async (filter, startAt) => {
 
 const findStory = (issue) => {
   return axios
-    .get(`https://whitepages.atlassian.net/rest/api/latest/issue/${issue}`)
+    .get(`/rest/api/latest/issue/${issue}`)
     .then(r => {
       const story = { issue }
       const { fields } = r.data
@@ -79,7 +79,7 @@ const findStory = (issue) => {
 
 const getStoryHistory = (issue) => {
   return axios
-    .get(`https://whitepages.atlassian.net/rest/api/latest/issue/${issue}/changelog`)
+    .get(`/rest/api/latest/issue/${issue}/changelog`)
     .then(r => {
       const analyzer = new Analyzer(r.data.values)
       return analyzer.getInfo()
