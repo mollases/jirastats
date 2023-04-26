@@ -4,6 +4,7 @@ A simple command line program to help understand how things are moving along in 
 
 ## Installation
 1. `touch .env` in the root of this repo
+1. add the base url like this `BASE_URL=https://company.atlasian.com`, you'll need to find the right url
 1. add your email like this `EMAIL=amolla@whitepages.com` to the .env file you just created
 1. go to your official jira profile https://id.atlassian.com/manage-profile/security
 1. make an api token
