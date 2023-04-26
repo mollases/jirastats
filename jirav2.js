@@ -10,9 +10,7 @@ const optionDefinitions = [
 ]
 
 const options = commandLineArgs(optionDefinitions)
-
-
-let jql = `project = PREMOP AND status = Done AND labels = CRO AND type not in ( Sub-Task , Bug)`
+const exampleJql = `project = PREMOP AND status = Done AND labels = CRO AND type not in ( Sub-Task , Bug)`
 
 /*
 TODO:
@@ -73,6 +71,10 @@ const findStory = (issue) => {
       }
       return story
     })
+    .catch(err => {
+      console.log(`there was a problem with ${issue}: ${err}`)
+      process.exit()
+    })
 }
 
 const getStoryHistory = (issue) => {
@@ -126,7 +128,7 @@ provide a ticket via "-t {jira ticket}" or "--ticket {jira ticket}"
 provide a jql query via "-j "{jql query}" or "--jql "{jql query}"
 
 If you are using the git repo, use this format "npm start -- [args]"
-for example "npm start -- -t PREM-1"
+for example "npm start -- -j "${exampleJql}"
 
 `)
 }
